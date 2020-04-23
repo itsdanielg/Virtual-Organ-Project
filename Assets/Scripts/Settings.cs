@@ -25,6 +25,7 @@ public class Settings : MonoBehaviour {
     public List<Transform> selectedKeyTransforms;
     public const int MAXKEYS = 85;
     public int currentKeyCounter = 0;
+    public const int KEYS_TO_PRESS = 17; // MAX IS 17
     public bool updateList;
 
     private float keyDownPos;
@@ -33,6 +34,8 @@ public class Settings : MonoBehaviour {
     private List<KeyCode> keyCodes;
     private List<KeyCode> selectedKeyCodes;
 
+    private bool[] keyPressed;
+
     void Start() {
 
         row = 1;
@@ -40,7 +43,7 @@ public class Settings : MonoBehaviour {
         highlightWhite.b = 30.0f/255.0f;
         highlightBlack = blackKeyMaterial.color;
         highlightBlack.g = 50.0f/255.0f;
-        selectedKeys = new List<int>(){0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+        selectedKeys = new List<int>();
         selectedKeyTransforms = new List<Transform>();
         updateList = false;
         selectedWhite = whiteKeyMaterial.color;
@@ -63,38 +66,50 @@ public class Settings : MonoBehaviour {
             KeyCode.Y,
             KeyCode.Alpha7,
             KeyCode.U,
-            KeyCode.Alpha8
+            KeyCode.Alpha8,
+            KeyCode.I,
+            KeyCode.Alpha9,
+            KeyCode.O,
+            KeyCode.Alpha0,
+            KeyCode.P,
+            KeyCode.Minus
         };
         selectedKeyCodes = new List<KeyCode>();
+
+        keyPressed = new bool[KEYS_TO_PRESS];
+        for (var i = 0; i < KEYS_TO_PRESS; i++) {
+            keyPressed[i] = false;
+            selectedKeys.Add(i);
+        }
         
     }
     
     void Update() {
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
+        if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
             row++;
             if (row > 7) {
                 row = 1;
             }
             updateList = true;
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
             row--;
             if (row < 1) {
                 row = 7;
             }
             updateList = true;
         }
-        if (Input.GetKey(KeyCode.LeftArrow)) {
+        if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
             if (selectedKeys[0] > 0) {
-                for (int i = 0; i < 12; i++) {
+                for (int i = 0; i < KEYS_TO_PRESS; i++) {
                     selectedKeys[i] -= 1;
                 }
                 updateList = true;
             }
         }
-        else if (Input.GetKey(KeyCode.RightArrow)) {
-            if (selectedKeys[11] < MAXKEYS) {
-                for (int i = 0; i < 12; i++) {
+        else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
+            if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS) {
+                for (int i = 0; i < KEYS_TO_PRESS; i++) {
                     selectedKeys[i] += 1;
                 }
                 updateList = true;
@@ -130,7 +145,7 @@ public class Settings : MonoBehaviour {
                     // Lonely C Key
                     if (octave.childCount == 0) {
                         if (selectedKeys.Contains(currentKeyCounter)) {
-                            if (selectedKeyTransforms.Count < 12) {
+                            if (selectedKeyTransforms.Count < KEYS_TO_PRESS) {
                                 selectedKeyTransforms.Add(octave);
                             }
                         }
@@ -142,7 +157,7 @@ public class Settings : MonoBehaviour {
                     }
                     foreach (Transform key in octave) {
                         if (selectedKeys.Contains(currentKeyCounter)) {
-                            if (selectedKeyTransforms.Count < 12) {
+                            if (selectedKeyTransforms.Count < KEYS_TO_PRESS) {
                                 selectedKeyTransforms.Add(key);
                             }
                         }
@@ -186,9 +201,9 @@ public class Settings : MonoBehaviour {
         }
 
         int keyCodeCount = 0;
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < KEYS_TO_PRESS; i++) {
             Transform key = selectedKeyTransforms[i];
-            if (oldPosList.Count < 12) {
+            if (oldPosList.Count < KEYS_TO_PRESS) {
                 oldPosList.Add(key.localPosition);
             }
             string keyName = key.gameObject.name;
@@ -199,7 +214,7 @@ public class Settings : MonoBehaviour {
             else {
                 keyRend.material.color = selectedWhite;
             }
-            if (selectedKeyCodes.Count < 12) {
+            if (selectedKeyCodes.Count < KEYS_TO_PRESS) {
                 if (selectedKeyCodes.Count == 0) {
                     if (keyName.EndsWith("#")) {
                         selectedKeyCodes.Add(keyCodes[keyCodeCount]);
@@ -214,7 +229,7 @@ public class Settings : MonoBehaviour {
                     selectedKeyCodes.Add(keyCodes[keyCodeCount]);
                     keyCodeCount++;
                 }
-                if (i + 1 < 12) {
+                if (i + 1 < KEYS_TO_PRESS) {
                     Transform nextKey = selectedKeyTransforms[i+1];
                     if (!keyName.EndsWith("#") && !nextKey.gameObject.name.EndsWith("#")) {
                         keyCodeCount++;
@@ -226,17 +241,35 @@ public class Settings : MonoBehaviour {
     }
 
     void updatePos () {
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < KEYS_TO_PRESS; i++) {
             if (Input.GetKeyDown(selectedKeyCodes[i])) {
                 Transform transform = selectedKeyTransforms[i];
                 Vector3 newPos = oldPosList[i];
                 newPos.y -= keyDownPos;
                 transform.localPosition = newPos;
+                // Play Sound
+                var sound = transform.gameObject.GetComponent<AudioSource>();
+                sound.time = 0.9f;
+                sound.Play();
+                keyPressed[i] = true;
             }
             if (Input.GetKeyUp(selectedKeyCodes[i])) {
                 Transform transform = selectedKeyTransforms[i];
                 transform.localPosition = oldPosList[i];
+                // Stop Sound
+                var sound = transform.gameObject.GetComponent<AudioSource>();
+                sound.Stop();
+                keyPressed[i] = false;;
             }
         }
+    }
+
+    bool areKeysPressed() {
+        for (var i = 0; i < keyPressed.Length; i++) {
+            if (keyPressed[i]) {
+                return true;
+            }
+        }
+        return false;
     }
 }
