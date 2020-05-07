@@ -85,46 +85,48 @@ public class Settings : MonoBehaviour {
     }
     
     void Update() {
-        if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
-            row++;
-            if (row > 7) {
-                row = 1;
-            }
-            updateList = true;
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
-            row--;
-            if (row < 1) {
-                row = 7;
-            }
-            updateList = true;
-        }
-        if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
-            if (selectedKeys[0] > 0) {
-                for (int i = 0; i < KEYS_TO_PRESS; i++) {
-                    selectedKeys[i] -= 1;
+        if (CameraController.SITTING_STATE) {
+            if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
+                row++;
+                if (row > 7) {
+                    row = 1;
                 }
                 updateList = true;
             }
-        }
-        else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
-            if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS) {
-                for (int i = 0; i < KEYS_TO_PRESS; i++) {
-                    selectedKeys[i] += 1;
+            else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
+                row--;
+                if (row < 1) {
+                    row = 7;
                 }
                 updateList = true;
             }
-        }
-        currentRowText.text = "Current Row: " + row.ToString();
+            if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
+                if (selectedKeys[0] > 0) {
+                    for (int i = 0; i < KEYS_TO_PRESS; i++) {
+                        selectedKeys[i] -= 1;
+                    }
+                    updateList = true;
+                }
+            }
+            else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
+                if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS) {
+                    for (int i = 0; i < KEYS_TO_PRESS; i++) {
+                        selectedKeys[i] += 1;
+                    }
+                    updateList = true;
+                }
+            }
+            currentRowText.text = "Current Row: " + row.ToString();
 
-        if (updateList) {
-            selectedKeyTransforms.Clear();
-            selectedKeyCodes.Clear();
-            oldPosList.Clear();
-            updateList = false;
+            if (updateList) {
+                selectedKeyTransforms.Clear();
+                selectedKeyCodes.Clear();
+                oldPosList.Clear();
+                updateList = false;
+            }
+            updateKeys();
+            updatePos();
         }
-        updateKeys();
-        updatePos();
     }
 
     void updateKeys() {
