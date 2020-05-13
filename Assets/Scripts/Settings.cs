@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class Settings : MonoBehaviour {
@@ -85,7 +86,13 @@ public class Settings : MonoBehaviour {
     }
     
     void Update() {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1, LoadSceneMode.Single);
+            return;
+        }
+        
         if (CameraController.SITTING_STATE) {
+            currentRowText.text = "Current State: Sitting";
             if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
                 row++;
                 if (row > 7) {
@@ -116,7 +123,6 @@ public class Settings : MonoBehaviour {
                     updateList = true;
                 }
             }
-            currentRowText.text = "Current Row: " + row.ToString();
 
             if (updateList) {
                 selectedKeyTransforms.Clear();
@@ -126,6 +132,9 @@ public class Settings : MonoBehaviour {
             }
             updateKeys();
             updatePos();
+        }
+        else {
+            currentRowText.text = "Current State: Standing";
         }
     }
 
@@ -252,6 +261,7 @@ public class Settings : MonoBehaviour {
                 // Play Sound
                 var sound = transform.gameObject.GetComponent<AudioSource>();
                 sound.time = 0.9f;
+                sound.volume = PlayerPrefs.GetFloat("Volume")/100.0f;
                 sound.Play();
                 keyPressed[i] = true;
             }

@@ -8,7 +8,6 @@ public class CameraController : MonoBehaviour {
     public static bool SITTING_STATE;
 
     Vector2 rotation = new Vector2 (0, 0);
-	public float speed = 1.5f;
 
     public float walkingSpeed = 25.0f;
     private float translation;
@@ -29,7 +28,14 @@ public class CameraController : MonoBehaviour {
         if (!SITTING_STATE) {
             translation = Input.GetAxis("Vertical") * walkingSpeed * Time.deltaTime;
             strafe = Input.GetAxis("Horizontal") * walkingSpeed * Time.deltaTime;
-            transform.Translate(strafe, 0, translation);
+            float yAxis = 0;
+            if (Input.GetKey(KeyCode.Mouse0)) {
+                yAxis = 0.5f;
+            }
+            else if (Input.GetKey(KeyCode.Mouse1)) {
+                yAxis = -0.5f;
+            }
+            transform.Translate(strafe, yAxis, translation);
         }
         else {
             transform.localPosition = new Vector3(0, 0, 0);
@@ -37,7 +43,7 @@ public class CameraController : MonoBehaviour {
 
 		rotation.y += Input.GetAxis("Mouse X");
 		rotation.x += -Input.GetAxis("Mouse Y");
-		transform.eulerAngles = (Vector2)rotation * speed;
+		transform.eulerAngles = (Vector2)rotation * PlayerPrefs.GetFloat("Sensitivity");
         
 	}
     
