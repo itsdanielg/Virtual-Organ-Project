@@ -20,6 +20,22 @@ public class Settings : MonoBehaviour {
     public Color selectedWhite;
     public Color selectedBlack;
 
+    private float highlightWhiteR = 102.0f/255.0f;
+    private float highlightWhiteG = 102.0f/255.0f;
+    private float highlightWhiteB = 0.0f/255.0f;
+
+    private float highlightBlackR = 0.0f/255.0f;
+    private float highlightBlackG = 102.0f/255.0f;
+    private float highlightBlackB = 0.0f/255.0f;
+
+    private float selectedWhiteR = 255.0f/255.0f;
+    private float selectedWhiteG = 255.0f/255.0f;
+    private float selectedWhiteB = 0.0f/255.0f;
+    
+    private float selectedBlackR = 0.0f/255.0f;
+    private float selectedBlackG = 255.0f/255.0f;
+    private float selectedBlackB = 0.0f/255.0f;
+
     // black = 1C110F
     // white = FFD99A
 
@@ -41,15 +57,13 @@ public class Settings : MonoBehaviour {
     void Start() {
 
         row = 1;
-        highlightWhite = whiteKeyMaterial.color;
-        highlightWhite.b = 30.0f/255.0f;
-        highlightBlack = blackKeyMaterial.color;
-        highlightBlack.g = 50.0f/255.0f;
+        highlightWhite = new Color(highlightWhiteR, highlightWhiteG, highlightWhiteB, 1.0f);
+        highlightBlack = new Color(highlightBlackR, highlightBlackG, highlightBlackB, 1.0f);
+        selectedWhite = new Color(selectedWhiteR, selectedWhiteG, selectedWhiteB, 1.0f);
+        selectedBlack = new Color(selectedBlackR, selectedBlackG, selectedBlackB, 1.0f);
         selectedKeys = new List<int>();
         selectedKeyTransforms = new List<Transform>();
         updateList = false;
-        selectedWhite = Color.red;
-        selectedBlack = Color.blue;
         keyDownPos = 0.1f;
         oldPosList = new List<Vector3>();
         keyCodes = new List<KeyCode>(){
@@ -353,4 +367,5 @@ public class Settings : MonoBehaviour {
             index++;
         }
     }
+
 }
