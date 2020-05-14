@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -47,9 +48,8 @@ public class Settings : MonoBehaviour {
         selectedKeys = new List<int>();
         selectedKeyTransforms = new List<Transform>();
         updateList = false;
-        selectedWhite = whiteKeyMaterial.color;
-        selectedBlack = blackKeyMaterial.color;
-
+        selectedWhite = Color.red;
+        selectedBlack = Color.blue;
         keyDownPos = 0.1f;
         oldPosList = new List<Vector3>();
         keyCodes = new List<KeyCode>(){
@@ -98,6 +98,23 @@ public class Settings : MonoBehaviour {
                 if (row > 7) {
                     row = 1;
                 }
+                // LIMIT CHECK
+                if (row == 3) {
+                    if (selectedKeys[0] < 7) {
+                        resetSelected(7, 7 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                        resetSelected(80 - KEYS_TO_PRESS, 80);
+                    }
+                }
+                else if (row > 3) {
+                    if (selectedKeys[0] < 24) {
+                        resetSelected(24, 24 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                    }
+                }
                 updateList = true;
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
@@ -105,20 +122,72 @@ public class Settings : MonoBehaviour {
                 if (row < 1) {
                     row = 7;
                 }
+                // LIMIT CHECK
+                if (row == 3) {
+                    if (selectedKeys[0] < 7) {
+                        resetSelected(7, 7 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                        resetSelected(80 - KEYS_TO_PRESS, 80);
+                    }
+                }
+                else if (row > 3) {
+                    if (selectedKeys[0] < 24) {
+                        resetSelected(24, 24 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                    }
+                }
                 updateList = true;
             }
             if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
+                
                 if (selectedKeys[0] > 0) {
                     for (int i = 0; i < KEYS_TO_PRESS; i++) {
                         selectedKeys[i] -= 1;
+                    }
+                    // LIMIT CHECK
+                    if (row == 3) {
+                        if (selectedKeys[0] < 7) {
+                            resetSelected(7, 7 + KEYS_TO_PRESS);
+                        }
+                        else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                            resetSelected(80 - KEYS_TO_PRESS, 80);
+                        }
+                    }
+                    else if (row > 3) {
+                        if (selectedKeys[0] < 24) {
+                            resetSelected(24, 24 + KEYS_TO_PRESS);
+                        }
+                        else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                            resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                        }
                     }
                     updateList = true;
                 }
             }
             else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
-                if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS) {
+                if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS - 1) {
                     for (int i = 0; i < KEYS_TO_PRESS; i++) {
                         selectedKeys[i] += 1;
+                    }
+                    // LIMIT CHECK
+                    if (row == 3) {
+                        if (selectedKeys[0] < 7) {
+                            resetSelected(7, 7 + KEYS_TO_PRESS);
+                        }
+                        else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                            resetSelected(80 - KEYS_TO_PRESS, 80);
+                        }
+                    }
+                    else if (row > 3) {
+                        if (selectedKeys[0] < 24) {
+                            resetSelected(24, 24 + KEYS_TO_PRESS);
+                        }
+                        else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                            resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                        }
                     }
                     updateList = true;
                 }
@@ -144,15 +213,6 @@ public class Settings : MonoBehaviour {
             if (row-1 == i) {
                 currentKeyCounter = 0;
                 foreach (Transform octave in organRow) {
-                    if (!octave.gameObject.activeSelf) {
-                        if (row == 3) {
-                            currentKeyCounter++;
-                        }
-                        else {
-                            currentKeyCounter += 12;
-                        }
-                        continue;
-                    }
                     // Lonely C Key
                     if (octave.childCount == 0) {
                         if (selectedKeys.Contains(currentKeyCounter)) {
@@ -167,19 +227,21 @@ public class Settings : MonoBehaviour {
                         continue;
                     }
                     foreach (Transform key in octave) {
-                        if (selectedKeys.Contains(currentKeyCounter)) {
-                            if (selectedKeyTransforms.Count < KEYS_TO_PRESS) {
-                                selectedKeyTransforms.Add(key);
-                            }
-                        }
-                        else {
-                            string keyName = key.gameObject.name; 
-                            Renderer keyRend = key.GetComponent<Renderer>();
-                            if (keyName.EndsWith("#")) {
-                                keyRend.material.color = highlightBlack;
+                        if (key.gameObject.activeSelf) {
+                            if (selectedKeys.Contains(currentKeyCounter)) {
+                                if (selectedKeyTransforms.Count < KEYS_TO_PRESS) {
+                                    selectedKeyTransforms.Add(key);
+                                }
                             }
                             else {
-                                keyRend.material.color = highlightWhite;
+                                string keyName = key.gameObject.name; 
+                                Renderer keyRend = key.GetComponent<Renderer>();
+                                if (keyName.EndsWith("#")) {
+                                    keyRend.material.color = highlightBlack;
+                                }
+                                else {
+                                    keyRend.material.color = highlightWhite;
+                                }
                             }
                         }
                         currentKeyCounter++;
@@ -188,9 +250,6 @@ public class Settings : MonoBehaviour {
             }
             else {
                 foreach (Transform octave in organRow) {
-                    if (!octave.gameObject.activeSelf) {
-                        continue;
-                    }
                     // Lonely C Key
                     if (octave.childCount == 0) {
                         Renderer keyRend = octave.GetComponent<Renderer>();
@@ -198,13 +257,15 @@ public class Settings : MonoBehaviour {
                         continue;
                     }
                     foreach (Transform key in octave) {
-                        string keyName = key.gameObject.name;
-                        Renderer keyRend = key.GetComponent<Renderer>();
-                        if (keyName.EndsWith("#")) {
-                            keyRend.material.color = blackKeyMaterial.color;
-                        }
-                        else {
-                            keyRend.material.color = whiteKeyMaterial.color;
+                        if (key.gameObject.activeSelf) {
+                            string keyName = key.gameObject.name;
+                            Renderer keyRend = key.GetComponent<Renderer>();
+                            if (keyName.EndsWith("#")) {
+                                keyRend.material.color = blackKeyMaterial.color;
+                            }
+                            else {
+                                keyRend.material.color = whiteKeyMaterial.color;
+                            }
                         }
                     }
                 }
@@ -283,5 +344,13 @@ public class Settings : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    void resetSelected(int lower, int upper) {
+        int index = 0;
+        for (int i = lower; i < upper; i++) {
+            selectedKeys[index] = i;
+            index++;
+        }
     }
 }
