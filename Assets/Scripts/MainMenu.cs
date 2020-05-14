@@ -21,6 +21,10 @@ public class MainMenu : MonoBehaviour {
     }
     
     public void Play() {
+        
+    }
+
+    public void Explore() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
     }
 
