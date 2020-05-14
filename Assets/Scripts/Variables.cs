@@ -18,19 +18,10 @@ public class Variables : MonoBehaviour {
             volume = PlayerPrefs.GetFloat("Volume");
             volumeSlider.value = volume;
         }
-        else {
-            PlayerPrefs.SetFloat("Volume", volume);
-            volumeSlider.value = volume;
-        }
         if (PlayerPrefs.HasKey("Sensitivity")) {
             volume = PlayerPrefs.GetFloat("Sensitivity");
             sensitivitySlider.value = sensitivity;
         }
-        else {
-            PlayerPrefs.SetFloat("Sensitivity", sensitivity);
-            sensitivitySlider.value = sensitivity;
-        }
-
     }
 
     public void updateVolume(float newVolume) {
