@@ -21,11 +21,11 @@ public class MainMenu : MonoBehaviour {
     }
     
     public void Play() {
-        // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 2, LoadSceneMode.Single);
+        SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
 
     public void Explore() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
+        SceneManager.LoadScene("Organ", LoadSceneMode.Single);
     }
 
     public void Quit() {

@@ -22,7 +22,9 @@ public class CameraController : MonoBehaviour {
 	void Update () {
 
         if (Input.GetKeyDown(KeyCode.F)) {
-            SITTING_STATE = !SITTING_STATE;
+            if (Settings.currentScene == "Organ") {
+                SITTING_STATE = !SITTING_STATE;
+            }
         }
 
         if (!SITTING_STATE) {

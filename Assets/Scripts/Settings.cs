@@ -8,7 +8,7 @@ using TMPro;
 public class Settings : MonoBehaviour {
 
     public static int row;
-    public TextMeshProUGUI currentRowText;
+    public TextMeshProUGUI currentText;
 
     public GameObject organ;
     public Material blackKeyMaterial;
@@ -54,8 +54,11 @@ public class Settings : MonoBehaviour {
 
     private bool[] keyPressed;
 
+    public static String currentScene;
+
     void Start() {
 
+        currentScene = SceneManager.GetActiveScene().name;
         row = 1;
         highlightWhite = new Color(highlightWhiteR, highlightWhiteG, highlightWhiteB, 1.0f);
         highlightBlack = new Color(highlightBlackR, highlightBlackG, highlightBlackB, 1.0f);
@@ -101,111 +104,13 @@ public class Settings : MonoBehaviour {
     
     void Update() {
         if (Input.GetKeyDown(KeyCode.M)) {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1, LoadSceneMode.Single);
+            SceneManager.LoadScene("Main Menu", LoadSceneMode.Single);
             return;
         }
-        
         if (CameraController.SITTING_STATE) {
-            currentRowText.text = "Current State: Sitting";
-            if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
-                row++;
-                if (row > 7) {
-                    row = 1;
-                }
-                // LIMIT CHECK
-                if (row == 3) {
-                    if (selectedKeys[0] < 7) {
-                        resetSelected(7, 7 + KEYS_TO_PRESS);
-                    }
-                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
-                        resetSelected(80 - KEYS_TO_PRESS, 80);
-                    }
-                }
-                else if (row > 3) {
-                    if (selectedKeys[0] < 24) {
-                        resetSelected(24, 24 + KEYS_TO_PRESS);
-                    }
-                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
-                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
-                    }
-                }
-                updateList = true;
-            }
-            else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
-                row--;
-                if (row < 1) {
-                    row = 7;
-                }
-                // LIMIT CHECK
-                if (row == 3) {
-                    if (selectedKeys[0] < 7) {
-                        resetSelected(7, 7 + KEYS_TO_PRESS);
-                    }
-                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
-                        resetSelected(80 - KEYS_TO_PRESS, 80);
-                    }
-                }
-                else if (row > 3) {
-                    if (selectedKeys[0] < 24) {
-                        resetSelected(24, 24 + KEYS_TO_PRESS);
-                    }
-                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
-                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
-                    }
-                }
-                updateList = true;
-            }
-            if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
-                
-                if (selectedKeys[0] > 0) {
-                    for (int i = 0; i < KEYS_TO_PRESS; i++) {
-                        selectedKeys[i] -= 1;
-                    }
-                    // LIMIT CHECK
-                    if (row == 3) {
-                        if (selectedKeys[0] < 7) {
-                            resetSelected(7, 7 + KEYS_TO_PRESS);
-                        }
-                        else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
-                            resetSelected(80 - KEYS_TO_PRESS, 80);
-                        }
-                    }
-                    else if (row > 3) {
-                        if (selectedKeys[0] < 24) {
-                            resetSelected(24, 24 + KEYS_TO_PRESS);
-                        }
-                        else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
-                            resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
-                        }
-                    }
-                    updateList = true;
-                }
-            }
-            else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
-                if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS - 1) {
-                    for (int i = 0; i < KEYS_TO_PRESS; i++) {
-                        selectedKeys[i] += 1;
-                    }
-                    // LIMIT CHECK
-                    if (row == 3) {
-                        if (selectedKeys[0] < 7) {
-                            resetSelected(7, 7 + KEYS_TO_PRESS);
-                        }
-                        else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
-                            resetSelected(80 - KEYS_TO_PRESS, 80);
-                        }
-                    }
-                    else if (row > 3) {
-                        if (selectedKeys[0] < 24) {
-                            resetSelected(24, 24 + KEYS_TO_PRESS);
-                        }
-                        else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
-                            resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
-                        }
-                    }
-                    updateList = true;
-                }
-            }
+
+            // KEY NAVIGATION
+            updateInput();
 
             if (updateList) {
                 selectedKeyTransforms.Clear();
@@ -215,10 +120,120 @@ public class Settings : MonoBehaviour {
             }
             updateKeys();
             updatePos();
+
+            currentText.text = "Current State: Sitting";
+            
         }
         else {
-            currentRowText.text = "Current State: Standing";
+            currentText.text = "Current State: Standing";
         }
+    }
+
+    void updateInput() {
+
+        // ROWS
+        if (Input.GetKeyDown(KeyCode.UpArrow) && !areKeysPressed()) {
+            row++;
+            if (row > 7) {
+                row = 1;
+            }
+            // LIMIT CHECK
+            if (row == 3) {
+                if (selectedKeys[0] < 7) {
+                    resetSelected(7, 7 + KEYS_TO_PRESS);
+                }
+                else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                    resetSelected(80 - KEYS_TO_PRESS, 80);
+                }
+            }
+            else if (row > 3) {
+                if (selectedKeys[0] < 24) {
+                    resetSelected(24, 24 + KEYS_TO_PRESS);
+                }
+                else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                    resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                }
+            }
+            updateList = true;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow) && !areKeysPressed()) {
+            row--;
+            if (row < 1) {
+                row = 7;
+            }
+            // LIMIT CHECK
+            if (row == 3) {
+                if (selectedKeys[0] < 7) {
+                    resetSelected(7, 7 + KEYS_TO_PRESS);
+                }
+                else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                    resetSelected(80 - KEYS_TO_PRESS, 80);
+                }
+            }
+            else if (row > 3) {
+                if (selectedKeys[0] < 24) {
+                    resetSelected(24, 24 + KEYS_TO_PRESS);
+                }
+                else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                    resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                }
+            }
+            updateList = true;
+        }
+
+        // KEYS
+        if (Input.GetKey(KeyCode.LeftArrow) && !areKeysPressed()) {
+            
+            if (selectedKeys[0] > 0) {
+                for (int i = 0; i < KEYS_TO_PRESS; i++) {
+                    selectedKeys[i] -= 1;
+                }
+                // LIMIT CHECK
+                if (row == 3) {
+                    if (selectedKeys[0] < 7) {
+                        resetSelected(7, 7 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                        resetSelected(80 - KEYS_TO_PRESS, 80);
+                    }
+                }
+                else if (row > 3) {
+                    if (selectedKeys[0] < 24) {
+                        resetSelected(24, 24 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                    }
+                }
+                updateList = true;
+            }
+        }
+        else if (Input.GetKey(KeyCode.RightArrow) && !areKeysPressed()) {
+            if (selectedKeys[KEYS_TO_PRESS-1] < MAXKEYS - 1) {
+                for (int i = 0; i < KEYS_TO_PRESS; i++) {
+                    selectedKeys[i] += 1;
+                }
+                // LIMIT CHECK
+                if (row == 3) {
+                    if (selectedKeys[0] < 7) {
+                        resetSelected(7, 7 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > 79) {
+                        resetSelected(80 - KEYS_TO_PRESS, 80);
+                    }
+                }
+                else if (row > 3) {
+                    if (selectedKeys[0] < 24) {
+                        resetSelected(24, 24 + KEYS_TO_PRESS);
+                    }
+                    else if (selectedKeys[KEYS_TO_PRESS-1] > MAXKEYS - 1) {
+                        resetSelected(MAXKEYS - KEYS_TO_PRESS, MAXKEYS);
+                    }
+                }
+                updateList = true;
+            }
+        }
+
     }
 
     void updateKeys() {
