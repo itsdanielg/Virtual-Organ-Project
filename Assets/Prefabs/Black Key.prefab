@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3689416003188288911}
   - component: {fileID: 3689416003188288896}
   - component: {fileID: 207764505786932392}
+  - component: {fileID: 4249487245117604908}
   m_Layer: 0
   m_Name: Black Key
   m_TagString: Untagged
@@ -189,3 +190,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4249487245117604908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3689416003188288898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fcdbf1854c30c94885de0b78c3733fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPressed: 0
+  isPlaying: 0

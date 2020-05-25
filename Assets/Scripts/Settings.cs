@@ -45,10 +45,7 @@ public class Settings : MonoBehaviour {
     public int currentKeyCounter = 0;
     public const int KEYS_TO_PRESS = 17; // MAX IS 17
     public bool updateList;
-
-    private float keyDownPos;
-    private Vector3 oldPos;
-    private List<Vector3> oldPosList;
+    
     private List<KeyCode> keyCodes;
     private List<KeyCode> selectedKeyCodes;
 
@@ -67,8 +64,6 @@ public class Settings : MonoBehaviour {
         selectedKeys = new List<int>();
         selectedKeyTransforms = new List<Transform>();
         updateList = false;
-        keyDownPos = 0.1f;
-        oldPosList = new List<Vector3>();
         keyCodes = new List<KeyCode>(){
             KeyCode.Alpha1,
             KeyCode.Q,
@@ -93,7 +88,6 @@ public class Settings : MonoBehaviour {
             KeyCode.Minus
         };
         selectedKeyCodes = new List<KeyCode>();
-
         keyPressed = new bool[KEYS_TO_PRESS];
         for (var i = 0; i < KEYS_TO_PRESS; i++) {
             keyPressed[i] = false;
@@ -115,7 +109,6 @@ public class Settings : MonoBehaviour {
             if (updateList) {
                 selectedKeyTransforms.Clear();
                 selectedKeyCodes.Clear();
-                oldPosList.Clear();
                 updateList = false;
             }
             updateKeys();
@@ -304,9 +297,6 @@ public class Settings : MonoBehaviour {
         int keyCodeCount = 0;
         for (int i = 0; i < KEYS_TO_PRESS; i++) {
             Transform key = selectedKeyTransforms[i];
-            if (oldPosList.Count < KEYS_TO_PRESS) {
-                oldPosList.Add(key.localPosition);
-            }
             string keyName = key.gameObject.name;
             Renderer keyRend = key.GetComponent<Renderer>();
             if (keyName.EndsWith("#")) {
@@ -345,23 +335,13 @@ public class Settings : MonoBehaviour {
         for (int i = 0; i < KEYS_TO_PRESS; i++) {
             if (Input.GetKeyDown(selectedKeyCodes[i])) {
                 Transform transform = selectedKeyTransforms[i];
-                Vector3 newPos = oldPosList[i];
-                newPos.y -= keyDownPos;
-                transform.localPosition = newPos;
-                // Play Sound
-                var sound = transform.gameObject.GetComponent<AudioSource>();
-                sound.time = 0.9f;
-                sound.volume = PlayerPrefs.GetFloat("Volume")/100.0f;
-                sound.Play();
                 keyPressed[i] = true;
+                transform.gameObject.GetComponent<Key>().isPressed = true;
             }
             if (Input.GetKeyUp(selectedKeyCodes[i])) {
                 Transform transform = selectedKeyTransforms[i];
-                transform.localPosition = oldPosList[i];
-                // Stop Sound
-                var sound = transform.gameObject.GetComponent<AudioSource>();
-                sound.Stop();
-                keyPressed[i] = false;;
+                keyPressed[i] = false;
+                transform.gameObject.GetComponent<Key>().isPressed = false;
             }
         }
     }

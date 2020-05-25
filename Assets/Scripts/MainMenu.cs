@@ -7,6 +7,9 @@ public class MainMenu : MonoBehaviour {
 
     public AudioSource mainmenu;
 
+    public static int difficulty;
+    public static bool autoplay;
+
     void Start() {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -18,6 +21,8 @@ public class MainMenu : MonoBehaviour {
         }
         mainmenu.volume = PlayerPrefs.GetFloat("Volume")/100.0f;
         mainmenu.Play();
+        difficulty = 0;
+        autoplay = false;
     }
     
     public void Play() {
