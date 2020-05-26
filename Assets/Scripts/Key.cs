@@ -5,22 +5,30 @@ using UnityEngine;
 
 public class Key : MonoBehaviour {
 
+    public bool isAutoplay;
+
     public bool isPressed;
     public bool isPlaying;
     public bool isSelected;
+    public bool isBackground;
+    public float timeSelected;
+    public float keyTime;
     
     private float keyDownPos;
 
     private Vector3 originalPos;
+    private Color keySelectedColor;
     private Color keyPressedColor;
 
     private bool isGame;
 
     void Start() {
+        isAutoplay = PlayerPrefs.GetInt("Autoplay") == 1 ? true : false;
         isPressed = false;
         isPlaying = false;
         keyDownPos = 0.1f;
         originalPos = transform.localPosition;
+        keySelectedColor = Color.red;
         keyPressedColor = new Color(255.0f/255.0f, 165.0f/255.0f, 0, 1.0f);
         if (Settings.currentScene == "Game") {
             isGame = true;
@@ -29,22 +37,42 @@ public class Key : MonoBehaviour {
             isGame = false;
         }
         isSelected = false;
+        isBackground = false;
     }
 
     void Update() {
+        if (isGame) {
+            if (isSelected) {
+                updateRender(0);
+                timeSelected += Time.deltaTime;
+                if (isAutoplay || isBackground) {
+                    isPressed = true;
+                }
+            }
+            else {
+                timeSelected = 0;
+                if (isAutoplay || isBackground) {
+                    isPressed = false;
+                }
+            }
+        }
         if (isPressed) {
             if (!isPlaying) {
                 isPlaying = true;
                 playSound();
                 pressTransform();
             }
-            updateRender();
+            updateRender(1);
             if (isGame) {
                 if (isSelected) {
-                    Game.currentScore += 3;
+                    if (!isBackground) {
+                        Game.currentScore += 3;
+                    }
                 }
                 else {
-                    Game.currentScore -= 1;
+                    if (!isBackground) {
+                        Game.currentScore -= 1;
+                    }
                 }
             }
         }
@@ -77,9 +105,14 @@ public class Key : MonoBehaviour {
         transform.localPosition = originalPos;
     }
 
-    void updateRender() {
+    void updateRender(int val) {
         Renderer keyRend = transform.GetComponent<Renderer>();
-        keyRend.material.color = keyPressedColor;
+        if (val == 0) {
+            keyRend.material.color = keySelectedColor;
+        }
+        else {
+            keyRend.material.color = keyPressedColor;
+        }
     }
 
 }

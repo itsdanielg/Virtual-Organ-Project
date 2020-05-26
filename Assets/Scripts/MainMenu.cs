@@ -23,6 +23,33 @@ public class MainMenu : MonoBehaviour {
         mainmenu.Play();
         difficulty = 0;
         autoplay = false;
+        PlayerPrefs.SetInt("Difficulty", difficulty);
+        PlayerPrefs.SetInt("Autoplay", (autoplay ? 1 : 0));
+    }
+
+    public void setEasy(bool newValue) {
+        if (newValue) {
+            PlayerPrefs.SetInt("Difficulty", 0);
+        }
+        
+    }
+
+    public void setMedium(bool newValue) {
+        if (newValue) {
+            PlayerPrefs.SetInt("Difficulty", 1);
+        }
+        
+    }
+
+    public void setHard(bool newValue) {
+        if (newValue) {
+            PlayerPrefs.SetInt("Difficulty", 2);
+        }
+        
+    }
+
+    public void setAutoplay(bool newValue) {
+        PlayerPrefs.SetInt("Autoplay", (newValue ? 1 : 0));
     }
     
     public void Play() {
