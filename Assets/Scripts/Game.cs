@@ -12,6 +12,7 @@ public class Game : MonoBehaviour {
     public TextMeshProUGUI difficultyText;
     public TextMeshProUGUI gameModeText;
     public TextMeshProUGUI continueText;
+    public AudioSource click;
 
     public static int difficulty;
     public static bool isAutoplay;
@@ -19,6 +20,7 @@ public class Game : MonoBehaviour {
 
     private float startOffset;
     private float gameStartTime;
+    private float clickTime;
     private bool gameStart;
     private float songTime;
     private List<List<List<float>>> songArray;
@@ -33,27 +35,35 @@ public class Game : MonoBehaviour {
 
     private bool songStarted;
     private bool songFinished;
+    private bool displayFinished;
+    private int finalScore;
 
     void Start() {
         difficulty = PlayerPrefs.GetInt("Difficulty");
         isAutoplay = PlayerPrefs.GetInt("Autoplay") == 1 ? true : false;
         currentScore = 0;
-        startOffset = 2.0f;
         gameStart = false;
         gameStartTime = 0.0f;
+        clickTime = 0.0f;
         songTime = 0.0f;
-        songArray = null;
-        secPerBeat = 0.0f;
+        songArray = SongInfo.keyArray;
+        secPerBeat = 60.0f/SongInfo.tempo;
+        startOffset = secPerBeat * 5.0f;
         songStarted = false;
         songFinished = false;
+        displayFinished = false;
+        finalScore = 0;
     }
 
     void Update() {
-        
+
         if (songStarted) {
             currentText.text = "Score: " + currentScore;
             if (songFinished) {
-                displayEnd();
+                if (!displayFinished) {
+                    displayFinished = true;
+                    displayEnd();
+                }
                 return;
             }
             if (!gameStart) {
@@ -61,6 +71,14 @@ public class Game : MonoBehaviour {
                 if (startOffset < gameStartTime) {
                     gameStart = true;
                     startGame();
+                }
+                else {
+                    clickTime += Time.deltaTime;
+                    if (clickTime > secPerBeat) {
+                        click.volume = PlayerPrefs.GetFloat("Volume")/100.0f;
+                        click.Play();
+                        clickTime = 0.0f;
+                    }
                 }
             }
             else {
@@ -75,12 +93,9 @@ public class Game : MonoBehaviour {
     }
 
     void startGame() {
-        songArray = SongInfo.keyArray;
-        secPerBeat = 60.0f/SongInfo.tempo;
         currentNote = 0;
         remainingNotes = songArray.Count;
         playingNotes = new List<Transform>();
-
     }
 
     void updateGame() {
@@ -159,7 +174,8 @@ public class Game : MonoBehaviour {
         }
     }
     void displayEnd() {
-        difficultyText.text = "Final Score: " + currentScore;
+        finalScore = currentScore;
+        difficultyText.text = "Final Score: " + finalScore;
         continueText.text = "Press M to return to the main menu...";
         gameModeText.gameObject.SetActive(false);
         titleScreen.SetActive(true);
