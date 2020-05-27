@@ -75,20 +75,8 @@ public class Game : MonoBehaviour {
     }
 
     void startGame() {
-
-        if (difficulty == 0) {
-            songArray = SongOne.keyArray;
-            secPerBeat = 60.0f/SongOne.tempo;
-        }
-        else if (difficulty == 1) {
-            songArray = SongOne.keyArray;
-            secPerBeat = 60.0f/SongOne.tempo;
-        }
-        else {
-            songArray = SongOne.keyArray;
-            secPerBeat = 60.0f/SongOne.tempo;
-        }
-
+        songArray = SongInfo.keyArray;
+        secPerBeat = 60.0f/SongInfo.tempo;
         currentNote = 0;
         remainingNotes = songArray.Count;
         playingNotes = new List<Transform>();

@@ -3,18 +3,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SongOne : MonoBehaviour {
+public class SongInfo : MonoBehaviour {
+
+    public static int difficulty;
 
     public static int totalNotes = 0;
+    TextAsset songData;
 
     // Row, Octave, Key, Time (1 = 1/4), Measure, Where in Measure (1/4), Background Note (0 or 1)
     public static List<List<List<float>>> keyArray;
 
-    public static int tempo = 80;
+    public static int tempo;
 
     void Start() {
         keyArray = new List<List<List<float>>>();
-        TextAsset songData = Resources.Load<TextAsset>("songone");
+        difficulty = PlayerPrefs.GetInt("Difficulty");
+        if (difficulty == 0) {
+            songData = Resources.Load<TextAsset>("pncNormal");
+            tempo = 60;
+        }
+        else if (difficulty == 1) {
+            songData = Resources.Load<TextAsset>("pncNormal");
+            tempo = 80;
+        }
+        else {
+            songData = Resources.Load<TextAsset>("pncHard");
+            tempo = 80;
+        }
+        
         string[] data = songData.text.Split(new char[] {'\n'});
         List<List<float>> chord = new List<List<float>>();
         for (int i = 1; i < data.Length; i++) {
