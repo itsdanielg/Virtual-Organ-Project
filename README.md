@@ -1,4 +1,4 @@
-Boardwalk Hall Auditorium Organ
+Boardwalk Hall Auditorium Organ  
 By Daniel Garcia
 
 CSE 487 Research Project, Spring 2020
